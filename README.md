@@ -19,6 +19,22 @@ The plugin connects to the SalesQL MCP server over HTTPS and authenticates with 
 2. Your browser opens the SalesQL login page.
 3. Sign in and authorize the connection. Done.
 
+## Skills
+
+The plugin ships guided workflows as skills, invokable as slash commands:
+
+| Skill | What it does |
+| --- | --- |
+| `/salesql:find-leads <business description or URL>` | End-to-end prospecting: researches your ideal customer profile, finds matching people, and reveals verified emails and phones for the leads you approve |
+
+Example:
+
+```
+/salesql:find-leads we sell an AI code-review tool for mid-size software companies in Spain
+```
+
+Claude can also trigger skills automatically when your request matches — e.g. "help me find leads for my business".
+
 ## Usage
 
 Once connected, just ask Claude in natural language. The plugin exposes these tools:
