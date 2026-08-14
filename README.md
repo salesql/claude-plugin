@@ -1,2 +1,59 @@
-# claude-plugin
-Official SalesQL plugin for Claude Code. connect the SalesQL MCP server and prospect, enrich and reveal B2B contacts from your terminal.
+# SalesQL for Claude Code
+
+Official [SalesQL](https://salesql.com) plugin for [Claude Code](https://code.claude.com). Prospect, enrich, and reveal B2B contacts without leaving your terminal: search for leads, get verified emails and phone numbers, and enrich people and companies through the SalesQL MCP server.
+
+## Installation
+
+Add the community marketplace (if you haven't already) and install the plugin:
+
+```
+/plugin marketplace add anthropics/claude-plugins-community
+/plugin install salesql@claude-plugins-community
+```
+
+## Authentication
+
+The plugin connects to the SalesQL MCP server over HTTPS and authenticates with OAuth — no API keys to copy or paste.
+
+1. In Claude Code, run `/mcp` and select **salesql**.
+2. Your browser opens the SalesQL login page.
+3. Sign in and authorize the connection. Done.
+
+## Usage
+
+Once connected, just ask Claude in natural language. The plugin exposes these tools:
+
+| Tool | What it does |
+| --- | --- |
+| `search_people` | Find leads by title, company, industry, location, and more |
+| `enrich_person` | Get verified emails, phones, and profile data for a person |
+| `enrich_organization` | Get firmographic data for a company |
+| `lookup` | Resolve a person or company from an email, domain, or LinkedIn URL |
+| `get_account_status` | Check your SalesQL plan and remaining credits |
+
+Example prompts:
+
+```
+Find 20 heads of sales at SaaS companies in Spain with 50-200 employees
+```
+
+```
+Get me a verified email and phone for this LinkedIn profile: <url>
+```
+
+```
+Enrich acme.com — industry, size, location, and tech stack
+```
+
+```
+How many SalesQL credits do I have left this month?
+```
+
+## Resources
+
+- [SalesQL documentation](https://help.salesql.com)
+- [SalesQL MCP](https://salesql.com/mcp)
+
+## License
+
+[MIT](LICENSE)

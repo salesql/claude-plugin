@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "salesql",
+  "displayName": "SalesQL",
+  "description": "B2B prospecting and enrichment from Claude Code: find leads, reveal verified emails and phone numbers, and enrich contacts and companies with SalesQL.",
+  "version": "0.1.0",
+  "author": {
+    "name": "SalesQL",
+    "url": "https://salesql.com"
+  },
+  "homepage": "https://salesql.com/mcp",
+  "repository": "https://github.com/SalesQL/claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "salesql",
+    "sales",
+    "prospecting",
+    "lead-generation",
+    "b2b",
+    "enrichment",
+    "contacts",
+    "emails",
+    "mcp"
+  ],
+  "defaultEnabled": false
+}
