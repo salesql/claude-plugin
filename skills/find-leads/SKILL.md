@@ -76,7 +76,7 @@ Deliver the final list as a table: name, title, company, verified emails (with s
 **Input:** `/salesql:find-leads we sell an AI code-review tool for mid-size software companies in Spain`
 
 1. ICP: CTOs, VPs of Engineering, Heads of Engineering; industry "software development"; country Spain; 51–200 employees. User confirms.
-2. `lookup` industry q="software" → slug; `lookup` country q="spain" → UUID; `lookup` company_size → "51,200" range value.
+2. `lookup` industry q="software" → slug; `lookup` country q="spain" → UUID; `lookup` company_size → "51-200" range value.
 3. `search_people` with `job_titles: ["CTO", "VP of Engineering", "Head of Engineering"]`, resolved `organization_industries`, `countries`, `organization_employee_ranges`, `has_emails: true`.
 4. Present 20 obfuscated matches; user picks 10.
 5. `enrich_person` by `linkedin_url` for each; deliver the table with verified emails and phones.

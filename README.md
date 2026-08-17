@@ -43,8 +43,10 @@ Once connected, just ask Claude in natural language. The plugin exposes these to
 | --- | --- |
 | `search_people` | Find leads by title, company, industry, location, and more |
 | `enrich_person` | Get verified emails, phones, and profile data for a person |
+| `enrich_person_bulk` | Enrich up to 100 people in one request |
 | `enrich_organization` | Get firmographic data for a company |
-| `lookup` | Resolve a person or company from an email, domain, or LinkedIn URL |
+| `enrich_organization_bulk` | Enrich up to 100 companies in one request |
+| `lookup` | Resolve valid filter values (industry, country, company size…) before searching — free, no credits |
 | `get_account_status` | Check your SalesQL plan and remaining credits |
 
 Example prompts:
