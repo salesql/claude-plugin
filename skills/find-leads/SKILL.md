@@ -48,12 +48,15 @@ Use the `q` parameter for fuzzy search on the dynamic types (`industry`, `countr
 Build the search from the resolved values. Sensible defaults:
 
 - Filter on the **person's** attributes (`job_titles`, `countries`) for who they are, and the **organization's** attributes (`organization_industries`, `organization_employee_ranges`) for where they work.
+- When the ICP targets companies in a geography, filter `organization_countries` in addition to `countries` — one is where the person lives, the other where the company is based. Filtering only by the person's country brings in locals working for foreign companies.
 - Add `has_emails: true` (or `has_emails_verified: true` when the user cares about deliverability) so results are actually contactable.
 - Start with `page: 1` and the default `page_size` of 20.
 
 Results come back with **obfuscated** contact data (e.g. `...@acme.com`) — this is expected and free. `is_total_accurate` is only reliable on page 1.
 
-Iterate on the filters, not on pages:
+Know the `organization_*` filter semantics: they match people holding **any current position** at a qualifying organization, and people often hold several open positions at once — so the primary organization shown in a result may not be the one that matched. Never trust the filter alone: verify each result's `organization` fields (e.g. `number_of_employees`, country) against the ICP and discard mismatches before presenting the shortlist.
+
+Iterate on the filters, not on pages — if page 1 is off-target, page 2 will be too; fix the query instead:
 
 - **Too few results** (or zero): broaden — drop the narrowest filter, add title synonyms, widen the employee range.
 - **Too many / off-target results**: tighten — add industry or size filters, use the `{include, exclude}` form to exclude noise (e.g. exclude "Assistant" titles).

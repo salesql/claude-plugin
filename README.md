@@ -11,6 +11,8 @@ Add the community marketplace (if you haven't already) and install the plugin:
 /plugin install salesql@claude-plugins-community
 ```
 
+The plugin ships disabled by default (it connects to an external service). If the `/salesql:` commands don't show up after installing, enable it from `/plugins`.
+
 ## Authentication
 
 The plugin connects to the SalesQL MCP server over HTTPS and authenticates with OAuth — no API keys to copy or paste.
