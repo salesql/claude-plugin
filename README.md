@@ -74,7 +74,8 @@ How many SalesQL credits do I have left this month?
 ## Resources
 
 - [SalesQL MCP docs](https://salesql.com/docs/mcp) — connection guides, prompt library, tools, and troubleshooting
-- [SalesQL documentation](https://help.salesql.com)
+- [SalesQL docs](https://salesql.com/docs) — developer documentation (API + MCP)
+- [SalesQL help center](https://help.salesql.com)
 - [SalesQL MCP](https://salesql.com/mcp)
 
 ## License
