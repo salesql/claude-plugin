@@ -21,6 +21,8 @@ The plugin connects to the SalesQL MCP server over HTTPS and authenticates with 
 2. Your browser opens the SalesQL login page.
 3. Sign in and authorize the connection. Done.
 
+For connection guides for other clients, a prompt library, and troubleshooting, see the [SalesQL MCP docs](https://salesql.com/docs/mcp).
+
 ## Skills
 
 The plugin ships guided workflows as skills, invokable as slash commands:
@@ -71,6 +73,7 @@ How many SalesQL credits do I have left this month?
 
 ## Resources
 
+- [SalesQL MCP docs](https://salesql.com/docs/mcp) — connection guides, prompt library, tools, and troubleshooting
 - [SalesQL documentation](https://help.salesql.com)
 - [SalesQL MCP](https://salesql.com/mcp)
 
