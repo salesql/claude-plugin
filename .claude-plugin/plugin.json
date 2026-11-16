@@ -2,15 +2,20 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "salesql",
   "displayName": "SalesQL",
-  "description": "B2B prospecting and enrichment from Claude Code: find leads, reveal verified emails and phone numbers, and enrich contacts and companies with SalesQL.",
-  "version": "0.1.0",
+  "description": "B2B prospecting and enrichment with SalesQL: find leads, reveal emails (with verification status) and phone numbers, verify email addresses, and enrich people and companies from your SalesQL account.",
+  "version": "0.2.0",
   "author": {
     "name": "SalesQL",
     "url": "https://salesql.com"
   },
-  "homepage": "https://salesql.com/mcp",
+  "homepage": "https://salesql.com/docs/mcp",
   "repository": "https://github.com/SalesQL/claude-plugin",
   "license": "MIT",
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://salesql.com/docs/mcp",
+  "supportUrl": "https://salesql.com/help",
+  "privacyPolicyUrl": "https://salesql.com/legal/privacy",
+  "termsOfServiceUrl": "https://salesql.com/legal/terms",
   "keywords": [
     "salesql",
     "sales",
@@ -20,7 +25,8 @@
     "enrichment",
     "contacts",
     "emails",
+    "phone-numbers",
+    "email-verification",
     "mcp"
-  ],
-  "defaultEnabled": false
+  ]
 }

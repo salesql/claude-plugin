@@ -1,0 +1,15 @@
+{
+  "name": "salesql",
+  "description": "The official SalesQL plugin for Claude: B2B prospecting, contact enrichment and email verification.",
+  "owner": {
+    "name": "SalesQL",
+    "url": "https://salesql.com"
+  },
+  "plugins": [
+    {
+      "name": "salesql",
+      "source": "./",
+      "description": "B2B prospecting and enrichment with SalesQL: find leads, reveal contact details, verify emails and enrich people and companies."
+    }
+  ]
+}

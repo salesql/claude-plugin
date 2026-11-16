@@ -1,28 +1,30 @@
 ---
 name: find-leads
 argument-hint: "[business description or URL]"
-description: End-to-end lead prospecting with SalesQL. Research a business's ideal customer profile (ICP), translate it into SalesQL search filters, find matching people, and reveal verified emails and phone numbers. Use this whenever the user wants to find leads, prospects, potential customers, or contacts for a business — even if they only give a company description, a website URL, or a vague ask like "who should I sell this to?". Also use it when the user mentions ICP research, building a lead list, or filling a pipeline.
+description: End-to-end lead prospecting with SalesQL. Research a business's ideal customer profile (ICP), translate it into SalesQL search filters, find matching people, and reveal emails (with verification status) and phone numbers. Use this whenever the user wants to find leads, prospects, potential customers, or contacts for a business — even if they only give a company description, a website URL, or a vague ask like "who should I sell this to?". Also use it when the user mentions ICP research, building a lead list, or filling a pipeline.
 ---
 
 # Find Leads
 
-Turn a business description or website URL into a list of qualified leads with verified contact data, using the SalesQL MCP tools.
+Turn a business description or website URL into a list of qualified leads with contact data, using the SalesQL MCP tools.
 
-The user's input is `$ARGUMENTS`: either a description of their business ("we sell payroll software for restaurants in the US") or a URL to research. If `$ARGUMENTS` is empty, ask what business or product they want to find leads for before doing anything else.
+The user's input is `$ARGUMENTS`: either a description of their business ("we sell payroll software for restaurants in the US") or a URL to research. If `$ARGUMENTS` is empty and the conversation names no business, product, or URL, ask what business or product they want to find leads for before doing anything else.
+
+Explicit instructions from the user take priority over the defaults in this workflow. For example, a user who already gives exact titles, locations, and company sizes can skip the ICP draft, and a user who asks for a different output format gets that format. Consent to spend credits is the one thing never to assume: only call `enrich_person` or `enrich_person_bulk` for leads the user has approved. A request that names the specific people to reveal, or explicitly asks you to reveal results without showing a shortlist first, counts as that approval.
 
 ## Why this order matters
 
-SalesQL charges credits only when revealing real contact data (`enrich_person`). Everything before that — resolving filters, searching, browsing obfuscated results — is free. So the workflow front-loads all the free research and iteration, and only spends credits at the very end, on leads the user has approved. Never invert this: enriching before the user confirms the list wastes their credits on contacts they may not want.
+In this workflow, SalesQL charges credits only when revealing real contact data (`enrich_person` or `enrich_person_bulk`). Everything before that — resolving filters, searching, browsing obfuscated results — is free. So the workflow front-loads all the free research and iteration, and only spends credits at the very end, on leads the user has approved. Never invert this: enriching before the user confirms the list wastes their credits on contacts they may not want.
 
 ## Step 1 — Understand the business
 
-If `$ARGUMENTS` contains a URL, fetch it (and, if needed, one or two obvious subpages like /pricing or /customers) to understand what the company sells, to whom, and at what price point. If it's a description, work from that, supplementing with web research only when the description is too thin to infer a customer profile.
+If the input contains a URL and you can browse the web, open it (and, if needed, one or two obvious subpages like /pricing or /customers) to understand what the company sells, to whom, and at what price point. If you cannot browse, ask the user to describe the business in a sentence or two. If it's a description, work from that, supplementing with web research (when available) only when the description is too thin to infer a customer profile.
 
 From this, draft an ideal customer profile (ICP):
 
 - **Job titles** of the buyer and/or decision maker (include synonyms and seniority variants — "Head of Sales", "VP Sales", "Sales Director")
 - **Industries** of the target companies
-- **Geography** (countries, and states/cities if the business is regional)
+- **Geography**: where the target companies are based (countries, and states/cities if the business is regional) and, only if it also matters, where the people must live
 - **Company size** (employee ranges) and, when relevant, **company type** (private, public, nonprofit…)
 
 Present the ICP to the user in a short summary and ask them to confirm or adjust it before searching. This checkpoint is cheap and prevents an entire search built on a wrong assumption.
@@ -39,7 +41,7 @@ Present the ICP to the user in a short summary and ask them to confirm or adjust
 | Company size | `company_size` | `organization_employee_ranges` |
 | Company type | `company_type` | `organization_company_types` |
 
-Use the `q` parameter for fuzzy search on the dynamic types (`industry`, `country`, `region`). Always pass the returned `value` to search filters — never the `label`. Job titles are free text and need no lookup; pass the title variants directly to `job_titles`.
+Pass the `q` parameter for the fuzzy-searched types (`industry`, `country`, `region`); it is required for them and ignored for `company_size` and `company_type`. Always pass the returned `value` to search filters — never the `label`. Job titles are free text and need no lookup; pass the title variants directly to `job_titles`.
 
 `lookup` consumes no credits, so resolve everything you need without worrying about cost.
 
@@ -47,14 +49,18 @@ Use the `q` parameter for fuzzy search on the dynamic types (`industry`, `countr
 
 Build the search from the resolved values. Sensible defaults:
 
-- Filter on the **person's** attributes (`job_titles`, `countries`) for who they are, and the **organization's** attributes (`organization_industries`, `organization_employee_ranges`) for where they work.
-- When the ICP targets companies in a geography, filter `organization_countries` in addition to `countries` — one is where the person lives, the other where the company is based. Filtering only by the person's country brings in locals working for foreign companies.
+- Filter on the **person's** attributes (`job_titles`) for who they are, and the **organization's** attributes (`organization_industries`, `organization_employee_ranges`) for where they work.
+- Put geography on the side the ICP restricts. `organization_countries` / `organization_states_or_cities` are where the company is; `countries` / `states_or_cities` are where the person lives. Filters combine with AND, so passing both requires both to match.
+  - Company geography ("software companies in Spain", "companies based in Spain", "Spanish companies") → `organization_countries` only. A sales leader working from Portugal for a Spanish company still fits.
+  - Person location, when the place describes the people themselves ("sales leaders based in Spain", "engineers located in Spain", "people who live in Spain") → `countries` only.
+  - Both only when the ICP restricts both (e.g. Spanish companies, and the contacts must live in Spain too).
+  - If the phrasing doesn't make it clear, default to `organization_countries` and say so when you present the shortlist, offering to narrow to people who also live there or to switch to people located there regardless of where their company is.
 - Add `has_emails: true` (or `has_emails_verified: true` when the user cares about deliverability) so results are actually contactable.
 - Start with `page: 1` and the default `page_size` of 20.
 
 Results come back with **obfuscated** contact data (e.g. `...@acme.com`) — this is expected and free. `is_total_accurate` is only reliable on page 1.
 
-Know the `organization_*` filter semantics: they match people holding **any current position** at a qualifying organization, and people often hold several open positions at once — so the primary organization shown in a result may not be the one that matched. Never trust the filter alone: verify each result's `organization` fields (e.g. `number_of_employees`, country) against the ICP and discard mismatches before presenting the shortlist.
+Know the `organization_*` filter semantics: they match people holding **any current position** at a qualifying organization, and people often hold several open positions at once — so the primary organization shown in a result may not be the one that matched. Never trust the filter alone: verify the `organization` fields each result includes (e.g. `number_of_employees`, and `location` when present) against the ICP and discard mismatches before presenting the shortlist. A result's top-level `location` is where the person lives, not where the company is: when you filtered by `organization_countries`, a person who lives in another country is not a mismatch.
 
 Iterate on the filters, not on pages — if page 1 is off-target, page 2 will be too; fix the query instead:
 
@@ -64,22 +70,24 @@ Iterate on the filters, not on pages — if page 1 is off-target, page 2 will be
 
 ## Step 4 — Present the shortlist and get approval
 
-Show the user the candidate leads in a table: name, title, company, location, LinkedIn URL, and what contact data exists (obfuscated). State clearly how many they asked for versus how many the search found.
+Show the user the candidate leads in a table: name, title, company, location (where the person lives), LinkedIn URL, and what contact data exists (obfuscated). State clearly how many they asked for versus how many the search found.
 
 Then ask which leads to reveal. This is the credit-spending gate — wait for an explicit answer. If the user wants many leads revealed, check `get_account_status` first and tell them how many credits they have before proceeding.
 
-## Step 5 — Reveal contacts with `enrich_person`
+## Step 5 — Reveal contacts
 
 For each approved lead, call `enrich_person` with the person's `linkedin_url` from the search result. This is the reliable join key between search and enrichment — fall back to `full_name` + `organization_name` (or `organization_domain`) only when a result has no LinkedIn URL.
 
-Deliver the final list as a table: name, title, company, verified emails (with status), phones, LinkedIn URL. If the user wants a file, write it as CSV.
+When the user approves more than a handful of leads, use `enrich_person_bulk` (up to 100 per request) instead of one call per person. It leaves out each person's work history unless `include_work_experience` is true, so ask whether they need it before calling: adding it later means revealing the same people again.
+
+Deliver the final list as a table: name, title, company, emails (with verification status), phones, LinkedIn URL. If the user wants a file, write it as CSV.
 
 ## Example
 
 **Input:** `/salesql:find-leads we sell an AI code-review tool for mid-size software companies in Spain`
 
-1. ICP: CTOs, VPs of Engineering, Heads of Engineering; industry "software development"; country Spain; 51–200 employees. User confirms.
+1. ICP: CTOs, VPs of Engineering, Heads of Engineering; industry "software development"; companies based in Spain (contacts may live elsewhere); 51–200 employees. User confirms.
 2. `lookup` industry q="software" → slug; `lookup` country q="spain" → UUID; `lookup` company_size → "51-200" range value.
-3. `search_people` with `job_titles: ["CTO", "VP of Engineering", "Head of Engineering"]`, resolved `organization_industries`, `countries`, `organization_employee_ranges`, `has_emails: true`.
+3. `search_people` with `job_titles: ["CTO", "VP of Engineering", "Head of Engineering"]`, resolved `organization_industries`, `organization_countries`, `organization_employee_ranges`, `has_emails: true`.
 4. Present 20 obfuscated matches; user picks 10.
-5. `enrich_person` by `linkedin_url` for each; deliver the table with verified emails and phones.
+5. `enrich_person_bulk` with the 10 LinkedIn URLs (after asking about work history); deliver the table with emails and phones.
