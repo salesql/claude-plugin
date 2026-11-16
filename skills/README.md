@@ -14,6 +14,4 @@ Each skill is exposed as a slash command (`/salesql:<skill-name>`) and can also 
 
 | Skill | Command | What it does |
 | --- | --- | --- |
-| [find-leads](find-leads/SKILL.md) | `/salesql:find-leads` | Research a business's ICP, search for matching people, and reveal verified emails and phones |
-
-More skills (campaign launching, email verification) will ship in upcoming releases as the underlying MCP tools become available.
+| [find-leads](find-leads/SKILL.md) | `/salesql:find-leads` | Research a business's ICP, search for matching people, and reveal emails (with verification status) and phones for the leads you approve |
